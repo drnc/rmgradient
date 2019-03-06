@@ -478,7 +478,7 @@ def main():
         args.inputdata, args.sigma, args.smooth, args.rows)
     bg = bgmodel.run(args.bgpoints)
     if args.bgfile:
-        args.bgfile.write(bg, args.inputdata.dtype)
+        args.bgfile.write(bg, args.inputdata.dtype, args.compress)
 
     rmgradient = GradientRemove(args.inputdata, bg)
     res = rmgradient.run()
