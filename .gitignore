@@ -2,3 +2,5 @@
 /build
 /dist
 /rmgradient.egg-info
+/rmgradient/test_data/sky_background.tif
+/rmgradient/test_data/sky_out.tif
