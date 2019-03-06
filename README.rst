@@ -27,13 +27,13 @@ these points are typically chosen
 in starless dark sky areas of the image.
 
 The background model is built as
-a multiquadratic `radial basis function_` **interpolation**
+a multiquadratic `radial basis function`_ **interpolation**
 of the color values for the chosen points in the image,
 computed with scipy_.
 
 The colors used for the interpolation
 aren't directly the color values of the input points.
-A `Gaussian blur_` on the image is applied
+A `Gaussian blur`_ on the image is applied
 at the input points coordinates,
 so as to smooth input data.
 
@@ -141,9 +141,16 @@ This file can then used as an input this way::
 
    cat input_points | xargs python rmgradient.py -i image.tif -o output.tif [options] -p
 
+An example image and input points are available
+in the `test data folder`_,
+together with a test_sky_image.sh_ script,
+to demonstrate how to use *rmgradient*.
+
 .. _radial basis function: https://en.wikipedia.org/wiki/Radial_basis_function
 .. _Gaussian blur: https://en.wikipedia.org/wiki/Gaussian_blur
 .. _numpy: http://www.numpy.org/
 .. _scipy: https://www.scipy.org/
 .. _tifffile: http://www.lfd.uci.edu/~gohlke/code/tifffile.py.html
 .. _rmgradient.py: https://github.com/drnc/rmgradient/blob/master/rmgradient/rmgradient.py
+.. _test data folder: https://github.com/drnc/rmgradient/tree/master/rmgradient/test_data
+.. _test_sky_image.sh: https://github.com/drnc/rmgradient/blob/master/rmgradient/test_sky_image.sh
