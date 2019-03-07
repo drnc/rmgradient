@@ -83,7 +83,6 @@ class TiffReader:
             with tifffile.TiffFile(self._filename) as tif:
                 self._data = tif.asarray(out='memmap')
                 self._extract_tags(tif.pages[0].tags)
-            #self._data = tifffile.imread(self._filename, out='memmap')
         except (OSError, IOError, ValueError) as err:
             logger.error(
                 "couldn't load image [{}]: {}".format(self._filename, err))
