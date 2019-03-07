@@ -120,6 +120,10 @@ to accomodate a user environment with low memory constraints).
 The smoothness of the background model approximation
 can be controlled.
 
+In case the input image contains an embedded color profile,
+*rmgradient* copies it in the output image.
+It also copies the datetime and orientation tags.
+
 How to run
 ==========
 

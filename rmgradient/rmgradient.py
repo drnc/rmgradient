@@ -51,6 +51,7 @@ class TiffReader:
         """
         self._filename = filename
         self._data = None
+        self._tags = []
 
     def name(self):
         """Return the reader's file name"""
@@ -79,7 +80,10 @@ class TiffReader:
         """
         logger.info("loading image [{}]".format(self._filename));
         try:
-            self._data = tifffile.imread(self._filename, out='memmap')
+            with tifffile.TiffFile(self._filename) as tif:
+                self._data = tif.asarray(out='memmap')
+                self._extract_tags(tif.pages[0].tags)
+            #self._data = tifffile.imread(self._filename, out='memmap')
         except (OSError, IOError, ValueError) as err:
             logger.error(
                 "couldn't load image [{}]: {}".format(self._filename, err))
@@ -133,6 +137,23 @@ class TiffReader:
 
         return True
 
+    def tags(self):
+        """Return interesting tags from the input image."""
+        return self._tags
+
+    # Extract the following tags from the image, if present:
+    # - DateTime
+    # - InterColorProfile
+    # - Orientation
+    def _extract_tags(self, tags):
+        for tagname in ['DateTime', 'InterColorProfile', 'Orientation']:
+            if tagname in tags:
+                tag = tags[tagname]
+                if tag.dtype.startswith('1'):
+                    tag.dtype = tag.dtype[1:]
+                self._tags.append(
+                    (tag.code, tag.dtype, tag.count, tag.value, True))
+
 class TiffWriter:
     """Write image data in a TIFF file."""
 
@@ -163,23 +184,26 @@ class TiffWriter:
 
         return True
 
-    def write(self, data, datatype = None, compress = 0):
+    def write(self, data, datatype = None, compress = 0, tags = []):
         """Write image data in the TIFF file.
 
         Parameters
         ----------
         data : numpy.ndarray
-            Images data,
+            Image data,
         datatype : numpy.dtype
             TIFF data type. None to use data datatype.
         compress : int
             Zlib compression level for TIFF data written.
+        tags : sequence of tuple
+            Extra tags to write in image, as defined in tifffile.TiffWriter.save
         """
         logger.info("writing image [{}]".format(self._filename));
         if datatype is not None:
             data = data.astype(datatype)
         try:
-            tifffile.imwrite(self._filename, data, compress=compress)
+            tifffile.imwrite(
+                self._filename, data, compress=compress, extratags=tags)
         except ValueError as err:
             logger.error(
                 "couldn't write image [{}]: {}".format(self._filename, err))
@@ -474,15 +498,17 @@ def main():
     if not args:
         return 1
 
+    tags = args.inputfile.tags()
+
     bgmodel = BackgroundModel(
         args.inputdata, args.sigma, args.smooth, args.rows)
     bg = bgmodel.run(args.bgpoints)
     if args.bgfile:
-        args.bgfile.write(bg, args.inputdata.dtype, args.compress)
+        args.bgfile.write(bg, args.inputdata.dtype, args.compress, tags)
 
     rmgradient = GradientRemove(args.inputdata, bg)
     res = rmgradient.run()
-    args.outputfile.write(res, args.inputdata.dtype, args.compress)
+    args.outputfile.write(res, args.inputdata.dtype, args.compress, tags)
 
     return 0
 
