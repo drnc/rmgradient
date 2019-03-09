@@ -16,7 +16,9 @@ setup(
     ],
     keywords='remove background gradient TIFF',
     py_modules=['rmgradient/rmgradient'],
-    install_requires=['numpy>=1.14', 'tifffile>=2018.11.6', 'scipy>=1.0'],
+    install_requires=[
+        'numpy>=1.14', 'tifffile>=2018.11.6', 'imagecodecs>=2018.11.6',
+        'scipy>=1.0'],
     python_requires='>=3',
     entry_points={
         'console_scripts': [ 'rmgradient=rmgradient.rmgradient:main' ],
