@@ -41,6 +41,11 @@ logger = logging.getLogger('rmgradient')
 class TiffReader:
     """Read image data from a TIFF file."""
 
+    # Extract the following tags from the image, if present
+    _EXTRACT_TAGS = [
+        'DateTime', 'ExifTag', 'InterColorProfile', 'GPSTag', 'Make', 'Model',
+        'Orientation']
+
     def __init__(self, filename):
         """Create the file reader object.
 
@@ -137,15 +142,11 @@ class TiffReader:
         return True
 
     def tags(self):
-        """Return interesting tags from the input image."""
+        """Return tags extracted from the input image."""
         return self._tags
 
-    # Extract the following tags from the image, if present:
-    # - DateTime
-    # - InterColorProfile
-    # - Orientation
     def _extract_tags(self, tags):
-        for tagname in ['DateTime', 'InterColorProfile', 'Orientation']:
+        for tagname in TiffReader._EXTRACT_TAGS:
             if tagname in tags:
                 tag = tags[tagname]
                 if tag.dtype.startswith('1'):
@@ -183,7 +184,7 @@ class TiffWriter:
 
         return True
 
-    def write(self, data, datatype = None, compress = 0, tags = []):
+    def write(self, data, datatype=None, compress=0, tags=[]):
         """Write image data in the TIFF file.
 
         Parameters
@@ -269,7 +270,7 @@ class BlurImage:
 class BackgroundModel:
     """Generate a model of an image background gradient"""
 
-    def __init__(self, image, sigma, smooth = 0.1, rows = 500):
+    def __init__(self, image, sigma, smooth=0.1, rows=500):
         """Create the background model object.
 
         Parameters
