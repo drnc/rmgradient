@@ -43,8 +43,7 @@ class TiffReader:
 
     # Extract the following tags from the image, if present
     _EXTRACT_TAGS = [
-        'DateTime', 'ExifTag', 'InterColorProfile', 'GPSTag', 'Make', 'Model',
-        'Orientation']
+        'DateTime', 'InterColorProfile', 'Make', 'Model', 'Orientation']
 
     def __init__(self, filename):
         """Create the file reader object.

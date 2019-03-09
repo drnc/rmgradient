@@ -121,9 +121,7 @@ The smoothness of the background model approximation
 can be controlled.
 
 If present in the input image,
-*rmgradient* copies exif tags,
-date and time information, GPS tag
-and embedded color profile
+*rmgradient* copies the embedded color profile
 in the output image.
 
 How to run
