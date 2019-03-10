@@ -41,10 +41,6 @@ logger = logging.getLogger('rmgradient')
 class TiffReader:
     """Read image data from a TIFF file."""
 
-    # Extract the following tags from the image, if present
-    _EXTRACT_TAGS = [
-        'DateTime', 'InterColorProfile', 'Make', 'Model', 'Orientation']
-
     def __init__(self, filename):
         """Create the file reader object.
 
@@ -86,7 +82,7 @@ class TiffReader:
         try:
             with tifffile.TiffFile(self._filename) as tif:
                 self._data = tif.asarray(out='memmap')
-                self._extract_tags(tif.pages[0].tags)
+                self._extract_icc(tif.pages[0].tags)
         except (OSError, IOError, ValueError) as err:
             logger.error(
                 "couldn't load image [{}]: {}".format(self._filename, err))
@@ -141,17 +137,13 @@ class TiffReader:
         return True
 
     def tags(self):
-        """Return tags extracted from the input image."""
+        """Return ICC profile tag extracted from the input image."""
         return self._tags
 
-    def _extract_tags(self, tags):
-        for tagname in TiffReader._EXTRACT_TAGS:
-            if tagname in tags:
-                tag = tags[tagname]
-                if tag.dtype.startswith('1'):
-                    tag.dtype = tag.dtype[1:]
-                self._tags.append(
-                    (tag.code, tag.dtype, tag.count, tag.value, True))
+    def _extract_icc(self, tags):
+        if 'InterColorProfile' in tags:
+            tag = tags['InterColorProfile']
+            self._tags.append((tag.code, 'B', tag.count, tag.value, True))
 
 class TiffWriter:
     """Write image data in a TIFF file."""
